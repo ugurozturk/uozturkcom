@@ -1,59 +1,664 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr" class="scroll-smooth">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uğur Öztürk | Full Stack Developer</title>
+    
+    <!-- Tailwind CSS v4 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind v4 Konfigürasyonu (CSS Tabanlı) -->
+    <link rel="stylesheet" href="./output.css">
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="/">
-
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Uğur Öztürk Resume and Personal Website">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Uğur Öztürk Resume">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" href="favicon.svg"/>
-
-  <title>Uğur Öztürk Resume</title>
-  <link rel="manifest" href="manifest.json">
-
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "638659169";
-  </script>
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer></script>
-</head>
-<body>
-  <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
+    <style>
+        /* Standart CSS (Animasyonlar ve Print Ayarları) */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
-      });
-    });
-  </script>
+        .blob {
+            position: absolute;
+            filter: blur(60px);
+            z-index: -1;
+            opacity: 0.5;
+            animation: move 10s infinite alternate;
+        }
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(30px, -30px) scale(1.1); }
+        }
+        /* Timeline Çizgisi */
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 15px;
+            height: 100%;
+            width: 2px;
+            background: #374151;
+        }
+        @media (min-width: 768px) {
+            .timeline-line::before {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+        
+        /* Modal Animasyonları */
+        .modal-open {
+            overflow: hidden;
+        }
+        #contact-modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #contact-modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #contact-modal:not(.hidden) {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #modal-content {
+            transition: transform 0.3s ease-in-out;
+            transform: scale(0.95);
+        }
+        #contact-modal:not(.hidden) #modal-content {
+            transform: scale(1);
+        }
+
+        /* --- YAZICI (PRINT) İÇİN ÖZEL AYARLAR --- */
+        @media print {
+            /* 1. Renkleri Zorla: Her şey siyah metin, beyaz arka plan */
+            body, p, h1, h2, h3, h4, h5, h6, span, div, a, li, i {
+                color: #000 !important;
+                background: transparent !important;
+                text-shadow: none !important;
+                box-shadow: none !important;
+            }
+            body { background-color: #fff !important; }
+
+            /* 2. Gereksiz Alanları Gizle */
+            #navbar, #mobile-menu-btn, .blob, button, #contact-modal, footer, 
+            .timeline-line::before, /* Timeline dikey çizgisini gizle */
+            .absolute.w-4, /* Timeline yuvarlak noktalarını gizle */
+            .print\:hidden /* Tailwind print:hidden class'ını zorla */
+            {
+                display: none !important;
+            }
+
+            /* 3. Düzeni Basitleştir */
+            section { 
+                padding-top: 10px !important; 
+                padding-bottom: 20px !important; 
+                page-break-inside: avoid;
+            }
+            
+            /* Timeline Yapısını Düzelt: Yan yana yerine alt alta */
+            #experience .group {
+                display: block !important; /* Flex'i iptal et */
+                margin-bottom: 20px !important;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 10px;
+                page-break-inside: avoid; /* Kutuyu bölme */
+            }
+
+            /* Masaüstü sol taraftaki başlıkları GİZLE */
+            #experience .hidden.md\:block {
+                display: none !important;
+            }
+
+            /* Mobil başlık yapısını ZORLA GÖSTER */
+            #experience .md\:hidden {
+                display: block !important;
+                margin-bottom: 5px !important;
+            }
+
+            /* İçerik kutularını genişlet ve sınırlarını kaldır */
+            #experience .w-5\/12, #experience .md\:w-5\/12 {
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                text-align: left !important;
+            }
+            
+            /* Kutu borderlarını ve arka planlarını düzenle */
+            .bg-gray-800, .bg-gray-900 {
+                border: 1px solid #eee !important;
+                padding: 10px !important;
+                margin-bottom: 10px !important;
+            }
+
+            /* YETENEKLER (SKILLS) BÖLÜMÜ - 2 KOLON AYARI */
+            #skills .grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important; /* İki eşit kolon */
+                gap: 15px !important;
+            }
+            #skills .bg-gray-900 {
+                break-inside: avoid; /* Kutuları sayfa sonuna gelince bölme */
+                page-break-inside: avoid;
+                border: 1px solid #ccc !important;
+            }
+            /* İkonları gizle */
+            #skills .text-2xl {
+                font-size: 1.2rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+
+            /* Profil resmini siyah beyaz yap */
+            img {
+                filter: grayscale(100%);
+                border: none !important;
+                ring: none !important;
+            }
+
+            /* Linklerin altını çizme */
+            a { text-decoration: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 antialiased selection:bg-primary selection:text-white">
+
+    <!-- Navigasyon -->
+    <nav class="fixed w-full z-50 bg-gray-900/90 backdrop-blur-md border-b border-gray-800 transition-all duration-300 print:hidden" id="navbar">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" class="text-2xl font-bold text-white tracking-tighter">
+                        U.<span class="text-primary">Ö.</span>
+                    </a>
+                </div>
+                
+                <!-- Masaüstü Linkler -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#home" class="text-gray-300 hover:text-primary transition-colors font-medium">Ana Sayfa</a>
+                    <a href="#about" class="text-gray-300 hover:text-primary transition-colors font-medium">Hakkımda</a>
+                    <a href="#experience" class="text-gray-300 hover:text-primary transition-colors font-medium">Deneyim</a>
+                    <a href="#skills" class="text-gray-300 hover:text-primary transition-colors font-medium">Yetenekler</a>
+                    <!-- İletişim Butonu (Modal Tetikleyici) -->
+                    <button onclick="toggleModal()" class="px-4 py-2 bg-primary text-white rounded-full hover:bg-blue-600 transition-colors font-medium text-sm">
+                        İletişim
+                    </button>
+                </div>
+
+                <!-- Mobil Menü Butonu -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobil Menü İçeriği -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900 border-t border-gray-800 absolute w-full left-0">
+            <div class="px-4 pt-2 pb-6 space-y-2 shadow-lg">
+                <a href="#home" class="block px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md font-medium">Ana Sayfa</a>
+                <a href="#about" class="block px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md font-medium">Hakkımda</a>
+                <a href="#experience" class="block px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md font-medium">Deneyim</a>
+                <a href="#skills" class="block px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md font-medium">Yetenekler</a>
+                <button onclick="toggleModal()" class="w-full text-left block px-3 py-3 text-primary font-bold hover:bg-gray-800 rounded-md">
+                    İletişim
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Bölümü -->
+    <section id="home" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden print:pt-0 print:pb-5">
+        <!-- Arkaplan Efektleri -->
+        <div class="blob bg-blue-600/20 w-96 h-96 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2 print:hidden"></div>
+        <div class="blob bg-purple-600/20 w-96 h-96 rounded-full bottom-0 right-0 translate-x-1/2 translate-y-1/2 print:hidden"></div>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center lg:text-left lg:flex lg:items-center lg:justify-between">
+            <div class="lg:w-1/2">
+                <!-- Badges (Web'de görünür, Baskıda gizlenir) -->
+                <div class="print:hidden">
+                    <span class="inline-block py-1 px-3 rounded-full bg-blue-900/30 text-blue-300 border border-blue-800 text-sm font-semibold mb-6">
+                        dotnet
+                    </span>
+                    <span class="inline-block py-1 px-3 rounded-full bg-blue-900/30 text-blue-300 border border-blue-800 text-sm font-semibold mb-6">
+                        plsql
+                    </span>
+                    <span class="inline-block py-1 px-3 rounded-full bg-blue-900/30 text-blue-300 border border-blue-800 text-sm font-semibold mb-6">
+                        liderlik
+                    </span>
+                    <span class="inline-block py-1 px-3 rounded-full bg-blue-900/30 text-blue-300 border border-blue-800 text-sm font-semibold mb-6">
+                        SQL / NonSQL
+                    </span>
+                    <span class="inline-block py-1 px-3 rounded-full bg-blue-900/30 text-blue-300 border border-blue-800 text-sm font-semibold mb-6">
+                        ABP.io
+                    </span>
+                </div>
+                
+                <h1 class="text-5xl lg:text-7xl font-bold text-white leading-tight mb-4 print:text-black print:text-4xl">
+                    Uğur Öztürk
+                </h1>
+                
+                <!-- SADECE PRINT İÇİN EMAIL ALANI -->
+                <div class="hidden print:block mb-4">
+                    <p class="text-lg font-bold text-black flex items-center gap-2">
+                        <i class="fas fa-envelope"></i> web@uozturk.com
+                    </p>
+                </div>
+                
+                <h2 class="text-2xl lg:text-3xl font-semibold text-gray-400 mb-6 print:text-black print:text-xl">
+                    Finans ve Hasar Yazılım <br> Müdür Yardımcısı <br>
+                    <span class="text-primary text-xl print:text-black">İstanbul, Türkiye</span>
+                </h2>
+                <p class="text-lg text-gray-400 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed print:text-black print:text-base print:mb-4">
+                    Lise yıllarında kodlama tutkusuyla kariyer yolculuğum başladı. Takım liderliği, mentorluk ve teknik yönlendirme ile ölçeklenebilir ve sürdürülebilir çözümler üretiyorum.
+                </p>
+                
+                <!-- Butonlar (Web'de görünür, Baskıda gizlenir) -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start print:hidden">
+                    <a href="https://github.com/ugurozturk" target="_blank" class="px-8 py-4 bg-gray-800 text-white border border-gray-700 rounded-lg hover:bg-gray-700 transition-all font-medium flex items-center justify-center gap-2">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    <!-- Modal Tetikleyici Buton -->
+                    <button onclick="toggleModal()" class="px-8 py-4 bg-primary text-white rounded-lg hover:bg-blue-600 transition-all shadow-lg hover:shadow-primary/30 font-medium text-center">
+                        Bana Ulaşın
+                    </button>
+                </div>
+            </div>
+            <!-- Profil Görseli -->
+            <div class="lg:w-5/12 mt-12 lg:mt-0 relative flex justify-center lg:justify-end print:mt-4">
+                <div class="relative w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden shadow-2xl border-4 border-gray-800 ring-4 ring-primary/30 print:border-none print:ring-0 print:w-48 print:h-48">
+                    <img src="https://filend.petaver.net/lMTX6jAfvBEkYOaMi5YTUnh/Images/uozturk_image.jpeg" alt="Uğur Öztürk" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hakkımda -->
+    <section id="about" class="py-20 bg-gray-800/50 print:bg-white print:py-5">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10 print:mb-4">
+                <h2 class="text-3xl font-bold text-white mb-4 print:text-black print:text-2xl">Hakkımda</h2>
+                <div class="w-20 h-1 bg-primary mx-auto rounded-full print:bg-black"></div>
+            </div>
+            <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl print:shadow-none print:border print:border-gray-300 print:bg-white print:text-black print:p-4">
+                <p class="text-gray-300 leading-relaxed mb-4 print:text-black print:text-sm">
+                    Kodlama tutkumu lise yıllarımda, abimin çalışmalarından ilham alarak keşfettim. HTML düzenlemeleriyle başlayan bu merak, üniversite yıllarında Cumhuriyet Üniversitesi Teknokent'te EnPos şirketinde çalışırken profesyonel bir kariyere dönüştü.
+                </p>
+                <p class="text-gray-300 leading-relaxed print:text-black print:text-sm">
+                    Kariyerim boyunca Dotnet ve çeşitli UI dillerinde deneyimim oldu. Şu anda .Net teknolojileri ve modern web çatıları (Vue, Angular) üzerinde uzmanlaşmış bir Full Stack Developer olarak, en güncel best practicesleri takip ederek verimli ve ölçeklenebilir yazılımlar ürettim. Axa Türkiye Bünyesinde, Hasar Yazılım dönüşüm projesinde kariyerimde yükselme imkanı yakalım. Dönüşüm projesinde kod yazmanın yanı sıra; takım liderliği, mentorluk ve teknik yönlendirme rollerini üstleniyorum.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- İş Deneyimi (Timeline) -->
+    <section id="experience" class="py-20 bg-gray-900 print:bg-white print:py-5">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 print:mb-6">
+                <h2 class="text-3xl font-bold text-white mb-4 print:text-black print:text-2xl">İş Deneyimi</h2>
+                <p class="text-gray-400 print:text-black">Profesyonel kariyer yolculuğum.</p>
+            </div>
+
+            <div class="relative timeline-line space-y-12 print:space-y-4">
+                <!-- AXA -->
+                <div class="relative md:flex items-center justify-between group print:block print:mb-4">
+                    <div class="hidden md:block w-5/12 text-right pr-8 print:w-full print:text-left print:mb-1">
+                        <h3 class="text-xl font-bold text-white print:text-black">AXA Türkiye</h3>
+                        <p class="text-primary font-medium print:text-black print:font-bold">Müdür Yardımcısı - Hasar Yazılım</p>
+                        <p class="text-gray-500 text-sm mt-1 print:text-black">Ocak 2025 - Devam ediyor</p>
+                    </div>
+                    
+                    <div class="absolute left-[7px] md:left-1/2 transform md:-translate-x-1/2 w-4 h-4 bg-primary rounded-full border-4 border-gray-900 z-10 print:hidden"></div>
+                    
+                    <div class="ml-10 md:ml-0 md:w-5/12 pl-0 md:pl-8 print:w-full print:ml-0 print:pl-0">
+                        <!-- Mobil Başlık -->
+                        <div class="md:hidden mb-2 print:hidden">
+                            <h3 class="text-xl font-bold text-white">AXA Türkiye</h3>
+                            <p class="text-primary font-medium">Müdür Yardımcısı - Hasar Yazılım</p>
+                            <p class="text-gray-500 text-sm">Ocak 2025 - Devam ediyor</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-primary/50 transition-colors print:bg-white print:border print:border-gray-300 print:shadow-none print:p-2">
+                            <p class="text-gray-300 text-sm leading-relaxed print:text-black">
+                                Elementer Hasar Yazılımı dönüşüm projesinde takım lideri olarak görev aldım. Takımın teknik yönlendirilmesi, mentorluk ve kod incelemeleri ile yazılım kalitesini artırdım. Dotnet 9, Vue.js ve Abp.io kullanarak modern, ölçeklenebilir ve sürdürülebilir çözümler geliştirdim. Ayrıca, CI/CD süreçlerinin kurulması ve iyileştirilmesi konularında da aktif rol oynadım.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- AXA Uzman -->
+                <div class="relative md:flex items-center justify-between group flex-row-reverse print:block print:mb-4">
+                    <div class="hidden md:block w-5/12 text-left pl-8 print:w-full print:pl-0 print:mb-1">
+                        <h3 class="text-xl font-bold text-white print:text-black">AXA Türkiye</h3>
+                        <p class="text-primary font-medium print:text-black print:font-bold">Uzman - Hasar Yazılım</p>
+                        <p class="text-gray-500 text-sm mt-1 print:text-black">Kasım 2019 - Ocak 2025</p>
+                    </div>
+                    
+                    <div class="absolute left-[7px] md:left-1/2 transform md:-translate-x-1/2 w-4 h-4 bg-gray-600 rounded-full border-4 border-gray-900 z-10 print:hidden"></div>
+                    
+                    <div class="ml-10 md:ml-0 md:w-5/12 pr-0 md:pr-8 text-left md:text-right print:w-full print:ml-0 print:pr-0 print:text-left">
+                         <!-- Mobil Başlık -->
+                         <div class="md:hidden mb-2 print:hidden">
+                            <h3 class="text-xl font-bold text-white">AXA Türkiye</h3>
+                            <p class="text-primary font-medium">Uzman - Hasar Yazılım</p>
+                            <p class="text-gray-500 text-sm">Kasım 2019 - Ocak 2025</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-gray-600 transition-colors print:bg-white print:border print:border-gray-300 print:shadow-none print:p-2">
+                            <p class="text-gray-300 text-sm leading-relaxed print:text-black">
+                                Farklı yöneticilerle çalıştım. Uzun süre sıfırdan hasar tarafının ovm entegrasyonunu ve bakımını, data aktarımlarını yaptım. Bu süreçte de, benden istenilen talepleri karşıladım. Dotnet ve vue ile geliştirmeler yaptım. Yeni katılan arkadaşlara da destek oldum.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AXA OutSource -->
+                <div class="relative md:flex items-center justify-between group print:block print:mb-4">
+                    <div class="hidden md:block w-5/12 text-right pr-8 print:w-full print:text-left print:mb-1">
+                        <h3 class="text-xl font-bold text-white print:text-black">AXA Türkiye</h3>
+                        <p class="text-primary font-medium print:text-black print:font-bold">OutSource - Hasar Yazılım</p>
+                        <p class="text-gray-500 text-sm mt-1 print:text-black">Mayıs 2019 - Kasım 2019</p>
+                    </div>
+                    
+                    <div class="absolute left-[7px] md:left-1/2 transform md:-translate-x-1/2 w-4 h-4 bg-primary rounded-full border-4 border-gray-900 z-10 print:hidden"></div>
+                    
+                    <div class="ml-10 md:ml-0 md:w-5/12 pl-0 md:pl-8 print:w-full print:ml-0 print:pl-0">
+                        <!-- Mobil Başlık -->
+                        <div class="md:hidden mb-2 print:hidden">
+                            <h3 class="text-xl font-bold text-white">AXA Türkiye</h3>
+                            <p class="text-primary font-medium">OutSource - Hasar Yazılım</p>
+                            <p class="text-gray-500 text-sm">Mayıs 2019 - Kasım 2019</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-primary/50 transition-colors print:bg-white print:border print:border-gray-300 print:shadow-none print:p-2">
+                            <p class="text-gray-300 text-sm leading-relaxed print:text-black">
+                                Elementer Hasar Yazılımı üzerinde, web forms uygulamarın vue transformasyonunda görev aldım. Backend tarafında Dotnet ve Plsql paketler ile geliştirmeler yaptım.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AcerPro -->
+                <div class="relative md:flex items-center justify-between group flex-row-reverse print:block print:mb-4">
+                    <div class="hidden md:block w-5/12 text-left pl-8 print:w-full print:pl-0 print:mb-1">
+                        <h3 class="text-xl font-bold text-white print:text-black">AcerPro Bilişim</h3>
+                        <p class="text-primary font-medium print:text-black print:font-bold">Software Support Specialist</p>
+                        <p class="text-gray-500 text-sm mt-1 print:text-black">Ağu 2018 - Mar 2019</p>
+                    </div>
+                    
+                    <div class="absolute left-[7px] md:left-1/2 transform md:-translate-x-1/2 w-4 h-4 bg-gray-600 rounded-full border-4 border-gray-900 z-10 print:hidden"></div>
+                    
+                    <div class="ml-10 md:ml-0 md:w-5/12 pr-0 md:pr-8 text-left md:text-right print:w-full print:ml-0 print:pr-0 print:text-left">
+                         <!-- Mobil Başlık -->
+                         <div class="md:hidden mb-2 print:hidden">
+                            <h3 class="text-xl font-bold text-white">AcerPro Bilişim</h3>
+                            <p class="text-primary font-medium">Software Support Specialist</p>
+                            <p class="text-gray-500 text-sm">Ağu 2018 - Mar 2019</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-gray-600 transition-colors print:bg-white print:border print:border-gray-300 print:shadow-none print:p-2">
+                            <p class="text-gray-300 text-sm leading-relaxed print:text-black">
+                                Sigorta şirketlerinden müşterilere eş zamanlı teklif oluşturulmasını sağlayan sistemler için, kod tarafında (Dotnet) ve rapor tarafında (MS SQL Procedure) hazırlayarak verimliliğini artırdım.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enpos -->
+                <div class="relative md:flex items-center justify-between group print:block print:mb-4">
+                    <div class="hidden md:block w-5/12 text-right pr-8 print:w-full print:text-left print:mb-1">
+                        <h3 class="text-xl font-bold text-white print:text-black">Enpos Bilişim</h3>
+                        <p class="text-primary font-medium print:text-black print:font-bold">Jr. Software Developer</p>
+                        <p class="text-gray-500 text-sm mt-1 print:text-black">Haz 2014 - Haz 2016</p>
+                    </div>
+                    
+                    <div class="absolute left-[7px] md:left-1/2 transform md:-translate-x-1/2 w-4 h-4 bg-gray-600 rounded-full border-4 border-gray-900 z-10 print:hidden"></div>
+                    
+                    <div class="ml-10 md:ml-0 md:w-5/12 pl-0 md:pl-8 print:w-full print:ml-0 print:pl-0">
+                         <!-- Mobil Başlık -->
+                         <div class="md:hidden mb-2 print:hidden">
+                            <h3 class="text-xl font-bold text-white">Enpos Bilişim</h3>
+                            <p class="text-primary font-medium">Jr. Software Developer</p>
+                            <p class="text-gray-500 text-sm">Haz 2014 - Haz 2016</p>
+                        </div>
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-gray-600 transition-colors print:bg-white print:border print:border-gray-300 print:shadow-none print:p-2">
+                            <p class="text-gray-300 text-sm leading-relaxed print:text-black">
+                                Üretim ve teknik servis süreçlerinin kayıt ve raporlanması üzerine Asp.Net MVC projesinde istenilen talepleri doğrudan dinleyerek, taleplerin karşılanması için kod geliştirdim.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Yetenekler (Skills) -->
+    <section id="skills" class="py-20 bg-gray-800/50 print:bg-white print:py-5">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 print:mb-4">
+                <h2 class="text-3xl font-bold text-white mb-4 print:text-black print:text-2xl">Teknik Yetkinlikler</h2>
+                <p class="text-gray-400 print:text-black">Kullandığım teknolojiler ve araçlar.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Backend -->
+                <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 hover:shadow-lg transition-all print:bg-white print:border print:border-gray-300 print:shadow-none print:p-3">
+                    <div class="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center text-blue-400 mb-4 text-2xl print:text-xl print:mb-2 print:w-8 print:h-8">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-3 print:text-black print:mb-1">Backend & .NET</h3>
+                    <ul class="space-y-2 text-gray-400 text-sm print:text-black print:text-xs">
+                        <li><i class="fas fa-check text-primary mr-2 print:text-black"></i>C# / Asp.net</li>
+                        <li><i class="fas fa-check text-primary mr-2 print:text-black"></i>.NET 6-7-8-9</li>
+                        <li><i class="fas fa-check text-primary mr-2 print:text-black"></i>Entity Framework / PLSql Packages</li>
+                        <li><i class="fas fa-check text-primary mr-2 print:text-black"></i>Dapper / Linq</li>
+                        <li><i class="fas fa-check text-primary mr-2 print:text-black"></i>Abp.io</li>
+                        <li><i class="fas fa-check text-primary mr-2 print:text-black"></i>RabbitMQ</li>
+                        <li><i class="fas fa-check text-primary mr-2 print:text-black"></i>Cross-Cutting Solutions</li>
+                        <li><i class="fas fa-check text-primary mr-2 print:text-black"></i>NUnit, Moq</li>
+                    </ul>
+                </div>
+
+                <!-- Frontend -->
+                <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 hover:shadow-lg transition-all print:bg-white print:border print:border-gray-300 print:shadow-none print:p-3">
+                    <div class="w-12 h-12 bg-purple-900/50 rounded-lg flex items-center justify-center text-purple-400 mb-4 text-2xl print:text-xl print:mb-2 print:w-8 print:h-8">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-3 print:text-black print:mb-1">Frontend</h3>
+                    <ul class="space-y-2 text-gray-400 text-sm print:text-black print:text-xs">
+                        <li><i class="fas fa-check text-purple-500 mr-2 print:text-black"></i>Javascript</li>
+                        <li><i class="fas fa-check text-purple-500 mr-2 print:text-black"></i>Vue.js</li>
+                        <li><i class="fas fa-check text-purple-500 mr-2 print:text-black"></i>Angular</li>
+                        <li><i class="fas fa-check text-purple-500 mr-2 print:text-black"></i>HTML5 / CSS3</li>
+                        <li><i class="fas fa-check text-purple-500 mr-2 print:text-black"></i>Flutter (Mobile)</li>
+                    </ul>
+                </div>
+
+                <!-- Database -->
+                <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 hover:shadow-lg transition-all print:bg-white print:border print:border-gray-300 print:shadow-none print:p-3">
+                    <div class="w-12 h-12 bg-green-900/50 rounded-lg flex items-center justify-center text-green-400 mb-4 text-2xl print:text-xl print:mb-2 print:w-8 print:h-8">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-3 print:text-black print:mb-1">Veritabanı</h3>
+                    <ul class="space-y-2 text-gray-400 text-sm print:text-black print:text-xs">
+                        <li><i class="fas fa-check text-green-500 mr-2 print:text-black"></i>PL/SQL</li>
+                        <li><i class="fas fa-check text-green-500 mr-2 print:text-black"></i>MsSql</li>
+                        <li><i class="fas fa-check text-green-500 mr-2 print:text-black"></i>PostgreSql</li>
+                        <li><i class="fas fa-check text-green-500 mr-2 print:text-black"></i>MongoDB</li>
+                        <li><i class="fas fa-check text-green-500 mr-2 print:text-black"></i>Redis</li>
+                    </ul>
+                </div>
+
+                <!-- Mimari & Diğer -->
+                <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 hover:shadow-lg transition-all print:bg-white print:border print:border-gray-300 print:shadow-none print:p-3">
+                    <div class="w-12 h-12 bg-orange-900/50 rounded-lg flex items-center justify-center text-orange-400 mb-4 text-2xl print:text-xl print:mb-2 print:w-8 print:h-8">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-3 print:text-black print:mb-1">Mimari & Araçlar</h3>
+                    <ul class="space-y-2 text-gray-400 text-sm print:text-black print:text-xs">
+                        <li><i class="fas fa-check text-orange-500 mr-2 print:text-black"></i>DDD / CQRS (MediatR)</li>
+                        <li><i class="fas fa-check text-orange-500 mr-2 print:text-black"></i>SOAP / REST API</li>
+                        <li><i class="fas fa-check text-orange-500 mr-2 print:text-black"></i>Git / GitHub</li>
+                        <li><i class="fas fa-check text-orange-500 mr-2 print:text-black"></i>CI / CD</li>
+                        <li><i class="fas fa-check text-orange-500 mr-2 print:text-black"></i>Elastic</li>
+                        <li><i class="fas fa-check text-orange-500 mr-2 print:text-black"></i>Docker</li>
+                        <li><i class="fas fa-check text-orange-500 mr-2 print:text-black"></i>Kubernetes</li>
+                        <li><i class="fas fa-check text-orange-500 mr-2 print:text-black"></i>AuditLogs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact"  class="bg-black text-gray-400 py-12 border-t border-gray-800 print:hidden">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <div class="text-2xl font-bold text-white tracking-tighter mb-1">
+                    U.<span class="text-primary">Ö.</span>
+                </div>
+                <p class="text-sm">Finans ve Hasar Yazılım Müdür Yardımcısı @ İstanbul</p>
+            </div>
+            
+            <div class="flex space-x-6 text-xl">
+                <a href="mailto:web@uozturk.com" class="hover:text-white transition-colors"><i class="fas fa-envelope"></i></a>
+                <a href="https://github.com/ugurozturk" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/uguroztuurk/" target="_blank" class="hover:text-white transition-colors"><i class="fab fa-linkedin"></i></a>
+            </div>
+            
+            <div class="text-sm">
+                &copy; 2025 Uğur Öztürk.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Iletişim Modalı -->
+    <div id="contact-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 print:hidden">
+        <div id="modal-content" class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl relative overflow-hidden">
+            <!-- Modal Başlığı -->
+            <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
+                <h3 class="text-xl font-bold text-white">İletişime Geç</h3>
+                <button onclick="toggleModal()" class="text-gray-400 hover:text-white focus:outline-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Modal İçeriği -->
+            <div class="p-6 space-y-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 text-primary text-2xl">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <p class="text-gray-300">
+                        Projeleriniz veya sorularınız için bana ulaşabilirsiniz. En kısa sürede dönüş yapacağım.
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <a href="mailto:web@uozturk.com" class="flex items-center gap-4 p-4 rounded-xl bg-gray-800 hover:bg-gray-700 hover:border-primary/50 border border-transparent transition-all group">
+                        <div class="w-10 h-10 rounded-lg bg-blue-900/30 flex items-center justify-center text-blue-400 group-hover:text-white transition-colors">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-500 font-semibold uppercase tracking-wider">E-Posta</div>
+                            <div class="text-white font-medium">web@uozturk.com</div>
+                        </div>
+                        <i class="fas fa-external-link-alt ml-auto text-gray-600 group-hover:text-white"></i>
+                    </a>
+
+                    <a href="https://github.com/ugurozturk" target="_blank" class="flex items-center gap-4 p-4 rounded-xl bg-gray-800 hover:bg-gray-700 hover:border-gray-600 border border-transparent transition-all group">
+                        <div class="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center text-gray-300 group-hover:text-white transition-colors">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-500 font-semibold uppercase tracking-wider">GitHub</div>
+                            <div class="text-white font-medium">ugurozturk</div>
+                        </div>
+                        <i class="fas fa-external-link-alt ml-auto text-gray-600 group-hover:text-white"></i>
+                    </a>
+                    
+                    <a href="#" class="flex items-center gap-4 p-4 rounded-xl bg-gray-800 hover:bg-gray-700 hover:border-blue-700/50 border border-transparent transition-all group">
+                        <div class="w-10 h-10 rounded-lg bg-blue-900/30 flex items-center justify-center text-blue-400 group-hover:text-white transition-colors">
+                            <i class="fab fa-linkedin-in"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-gray-500 font-semibold uppercase tracking-wider">LinkedIn</div>
+                            <div class="text-white font-medium">Profilime Git</div>
+                        </div>
+                        <i class="fas fa-external-link-alt ml-auto text-gray-600 group-hover:text-white"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Modal Alt Bilgi -->
+            <div class="p-4 bg-gray-900/50 text-center text-xs text-gray-500 border-t border-gray-800">
+                İstanbul, Türkiye
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal İşlemleri
+        const modal = document.getElementById('contact-modal');
+        
+        function toggleModal() {
+            const body = document.body;
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                body.classList.add('modal-open'); // Arka planın kaymasını engelle
+            } else {
+                modal.classList.add('hidden');
+                body.classList.remove('modal-open');
+            }
+        }
+
+        // Modal dışına tıklandığında kapatma
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                toggleModal();
+            }
+        });
+
+        // ESC tuşu ile kapatma
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                toggleModal();
+            }
+        });
+
+        // Mobil Menü İşlemleri (Mevcut kod)
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const icon = btn.querySelector('i');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            if(menu.classList.contains('hidden')){
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+        });
+
+        // Linklere tıklandığında mobil menüyü kapat
+        menu.querySelectorAll('a, button').forEach(element => {
+            element.addEventListener('click', () => {
+                // Sadece link ise menüyü kapat, buton ise toggleModal zaten çalışacak ama menüyü de kapatmak iyi olur
+                menu.classList.add('hidden');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 20) {
+                navbar.classList.add('shadow-lg');
+                navbar.classList.replace('bg-gray-900/90', 'bg-gray-900/95');
+            } else {
+                navbar.classList.remove('shadow-lg');
+                navbar.classList.replace('bg-gray-900/95', 'bg-gray-900/90');
+            }
+        });
+    </script>
 </body>
 </html>
